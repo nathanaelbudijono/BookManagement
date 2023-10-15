@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Author {
+  authorId   Int    @id
+  authorName String
+  Book       Book[]
+}
+
+model Book {
+  bookId        Int          @id
+  title         String
+  publisherName String
+  BookAuthor    Author[]
+  publisher     Publisher?   @relation(fields: [publisherId], references: [publisherId])
+  publisherId   Int?
+  BookCopies    BookCopies[]
+  bookLoans     BookLoans[]
+}
+
+model Publisher {
+  publisherId   Int    @id
+  publisherName String
+  bookPublished Book[]
+}
+
+model BookCopies {
+  bookCopiesId   Int           @id
+  noOfCopies     Int
+  LibaryBranch   LibaryBranch? @relation(fields: [libaryBranchId], references: [libaryBranchId])
+  libaryBranchId Int?
+  Book           Book?         @relation(fields: [bookBookId], references: [bookId])
+  bookBookId     Int?
+}
+
+model BookLoans {
+  bookLoansId    Int           @id
+  dateOut        DateTime      @default(now())
+  dueDate        DateTime?
+  Borrower       Borrower?     @relation(fields: [borrowerId], references: [borrowerId])
+  borrowerId     Int?
+  Book           Book?         @relation(fields: [bookBookId], references: [bookId])
+  bookBookId     Int?
+  LibaryBranch   LibaryBranch? @relation(fields: [libaryBranchId], references: [libaryBranchId])
+  libaryBranchId Int?
+}
+
+model LibaryBranch {
+  libaryBranchId Int          @id
+  branchName     String
+  Address        String
+  BookCopies     BookCopies[]
+  BookLoans      BookLoans[]
+}
+
+model Borrower {
+  borrowerId Int         @id
+  cardNo     BookLoans[]
+  name       String
+  address    String
+  phone      String
+}
